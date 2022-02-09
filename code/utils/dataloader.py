@@ -23,7 +23,7 @@ class Dataset(InMemoryDataset):
         self.sufix=sufix
         self.store_backup = True
 
-        super(Dataset_ml, self).__init__(root, transform, pre_transform)
+        super(Dataset, self).__init__(root, transform, pre_transform)
         self.data, self.slices = torch.load(self.processed_paths[0])
         self.stat_info = torch.load(self.processed_paths[1])
         self.data_num = self.stat_info['data_num']
