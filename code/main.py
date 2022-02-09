@@ -3,8 +3,7 @@ import scipy.sparse as sp
 import torch
 import torch.nn as nn
 import argparse
-from utils.dataloader import Dataset 
-from utils.dataloader_ml import Dataset_ml
+from utils.dataloader import Dataset
 from torch_geometric.data import DataLoader
 
 from torch_geometric.nn import global_mean_pool
@@ -55,42 +54,17 @@ writer = SummaryWriter(f"../results/runs/train_together_{datetime.now()}")
 Data Loading
 =========================================================
 """
-lar_dataset = ['ml-1m', 'book-crossing']
-if args.dataset in lar_dataset:
-    dataset = Dataset_ml('../data/', args.dataset, 'implicit_ratings.csv')
-else:
-    dataset = Dataset('../data/', args.dataset)
+dataset = Dataset('../data/', args.dataset, 'implicit_ratings.csv')
 n_features = dataset.node_M() 
 data_num = dataset.data_N()
 train_p = 0.7
 test_p = (1 - train_p)/2 
 
-if args.dataset in lar_dataset:
-    pos_num, neg_num, valid_num = dataset.stat_info['train_test_split_index']
-    train_dataset_pos = dataset[:pos_num]
-    train_dataset_neg = dataset[pos_num:neg_num]
-    val_dataset = dataset[neg_num:valid_num]
-    test_dataset = dataset[valid_num:]
-else:
-    pos_num, neg_num = dataset.statistical_info['pos_neg']
-    #dataset.shuffle()
-    data_pos = dataset[:pos_num]
-    #data_pos = data_pos.shuffle()
-    data_neg = dataset[pos_num:]
-    #data_neg = data_neg.shuffle()
-
-
-    train_index_pos = int(len(data_pos)* train_p)
-    train_index_neg = int(len(data_neg)* train_p)
-    test_index_pos = int(len(data_pos) * (1 - test_p))
-    test_index_neg = int(len(data_neg) * (1 - test_p))
-
-    train_dataset_pos = data_pos[:train_index_pos]
-    train_dataset_neg = data_neg[:train_index_neg]
-    test_dataset = torch.utils.data.dataset.ConcatDataset([data_pos[train_index_pos:test_index_pos],\
-            data_neg[train_index_neg:test_index_neg]])
-    val_dataset = torch.utils.data.dataset.ConcatDataset([data_pos[test_index_pos:], \
-            data_neg[test_index_neg:]])
+pos_num, neg_num, valid_num = dataset.stat_info['train_test_split_index']
+train_dataset_pos = dataset[:pos_num]
+train_dataset_neg = dataset[pos_num:neg_num]
+val_dataset = dataset[neg_num:valid_num]
+test_dataset = dataset[valid_num:]
 
 # calculate batch size for negative data samples
 n_round = int(len(train_dataset_pos)/args.batch_size)
