@@ -13,7 +13,7 @@ import os
 from icecream import ic
 
 
-class Dataset_ml(InMemoryDataset):
+class Dataset(InMemoryDataset):
     def __init__(self, root, dataset, rating_file, sep=',', sufix='', transform=None, pre_transform=None):
 
         self.path = root
